@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ConduitDEVAPP (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ConduitDEVAPP (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
