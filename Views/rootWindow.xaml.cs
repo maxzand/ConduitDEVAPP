@@ -31,6 +31,7 @@ namespace ConduitDEVAPP.Views;
             // Set Title Bar
             this.ExtendsContentIntoTitleBar = true;
             this.SetTitleBar(AppBar);
+            
            
         }
 

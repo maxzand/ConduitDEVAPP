@@ -5,12 +5,14 @@
     xmlns:local="using:ConduitDEVAPP"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    
+    >
 
 
 
 
-    <Grid Background="#534B62">
+    <Grid Background="#534B62" CornerRadius="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -20,14 +22,15 @@
                    Text=" Conduit"
                    Height="25"
                    Foreground="#EFF1F3"
+                   VerticalAlignment="Center"
                    >
             
         </TextBlock>
-        <Grid Background="#534B62" ColumnDefinitions="*, *" RowDefinitions ="*, *" Grid.Row="1">
-            <Frame x:Name="topleftFrame" Grid.Column="0" Grid.Row="0" />
-            <Frame x:Name="bottomleftFrame" Grid.Column="0" Grid.Row="1" />
-            <Frame x:Name="toprightFrame" Grid.Column="1" Grid.Row="0" />
-            <Frame x:Name="bottomrightFrame" Grid.Row="1" Grid.Column="1" />
+        <Grid Background="#534B62" ColumnDefinitions="*, *" RowDefinitions ="*, *" Grid.Row="1" Margin="15, 0, 15, 0">
+            <Frame x:Name="topleftFrame" Grid.Column="0" Grid.Row="0" CornerRadius="8" Margin="10, 10, 10, 10" />
+            <Frame x:Name="bottomleftFrame" Grid.Column="0" Grid.Row="1" CornerRadius="8" Margin="10,10,10,10" />
+            <Frame x:Name="toprightFrame" Grid.Column="1" Grid.Row="0" CornerRadius="8" Margin="10,10,10,10" />
+            <Frame x:Name="bottomrightFrame" Grid.Row="1" Grid.Column="1" CornerRadius="8" Margin="10,10,10,10" />
         </Grid>
     </Grid>
 </Window>
