@@ -10,19 +10,20 @@
 
 
 
-    <Grid>
+    <Grid Background="#534B62">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBlock x:Name="AppBar"
                    IsTextSelectionEnabled="False"
-                   Text="Conduit"
+                   Text=" Conduit"
                    Height="25"
+                   Foreground="#EFF1F3"
                    >
             
         </TextBlock>
-        <Grid Background="Gray" ColumnDefinitions="*, *" RowDefinitions ="*, *" Grid.Row="1">
+        <Grid Background="#534B62" ColumnDefinitions="*, *" RowDefinitions ="*, *" Grid.Row="1">
             <Frame x:Name="topleftFrame" Grid.Column="0" Grid.Row="0" />
             <Frame x:Name="bottomleftFrame" Grid.Column="0" Grid.Row="1" />
             <Frame x:Name="toprightFrame" Grid.Column="1" Grid.Row="0" />
