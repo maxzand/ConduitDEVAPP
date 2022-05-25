@@ -9,9 +9,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid Background="#534B62" ColumnDefinitions="*, *" RowDefinitions ="*, *">
-        <Rectangle Fill="Red" Grid.Column="0" Grid.Row="0" />
-        <Rectangle Fill="Blue" Grid.Column="0" Grid.Row="1" />
-        <Rectangle Fill="Green" Grid.Column="1" Grid.Row="0" />
-        <Rectangle Fill="Yellow" Grid.Row="1" Grid.Column="1" />
+        <Button Content="Connect to my device!" CornerRadius="4" Grid.Column="1" Grid.Row="1"/>
     </Grid>
 </Page>

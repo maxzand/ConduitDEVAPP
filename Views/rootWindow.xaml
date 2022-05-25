@@ -12,7 +12,7 @@
 
 
 
-    <Grid Background="#534B62" CornerRadius="8">
+    <Grid Background="#1A181B" CornerRadius="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -20,13 +20,15 @@
         <TextBlock x:Name="AppBar"
                    IsTextSelectionEnabled="False"
                    Text=" Conduit"
-                   Height="25"
+                   FontSize="18"
+                   Height="30"
                    Foreground="#EFF1F3"
                    VerticalAlignment="Center"
+                   
                    >
             
         </TextBlock>
-        <Grid Background="#534B62" ColumnDefinitions="*, *" RowDefinitions ="*, *" Grid.Row="1" Margin="15, 0, 15, 0">
+        <Grid Background="#1A181B" ColumnDefinitions="*, *" RowDefinitions ="*, *" Grid.Row="1" Margin="15, 0, 15, 0">
             <Frame x:Name="topleftFrame" Grid.Column="0" Grid.Row="0" CornerRadius="8" Margin="10, 10, 10, 10" />
             <Frame x:Name="bottomleftFrame" Grid.Column="0" Grid.Row="1" CornerRadius="8" Margin="10,10,10,10" />
             <Frame x:Name="toprightFrame" Grid.Column="1" Grid.Row="0" CornerRadius="8" Margin="10,10,10,10" />
