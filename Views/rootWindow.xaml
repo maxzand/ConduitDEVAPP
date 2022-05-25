@@ -30,9 +30,13 @@
         </TextBlock>
         <Grid Background="#1A181B" ColumnDefinitions="*, *" RowDefinitions ="*, *" Grid.Row="1" Margin="15, 0, 15, 0">
             <Frame x:Name="topleftFrame" Grid.Column="0" Grid.Row="0" CornerRadius="8" Margin="10, 10, 10, 10" />
+            <AppBarButton Icon="FullScreen"  Grid.Column="0" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" />
             <Frame x:Name="bottomleftFrame" Grid.Column="0" Grid.Row="1" CornerRadius="8" Margin="10,10,10,10" />
+            <AppBarButton Icon="FullScreen"  Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" />
             <Frame x:Name="toprightFrame" Grid.Column="1" Grid.Row="0" CornerRadius="8" Margin="10,10,10,10" />
+            <AppBarButton Icon="FullScreen"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" />
             <Frame x:Name="bottomrightFrame" Grid.Row="1" Grid.Column="1" CornerRadius="8" Margin="10,10,10,10" />
+            <AppBarButton Icon="FullScreen"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" />
         </Grid>
     </Grid>
 </Window>
