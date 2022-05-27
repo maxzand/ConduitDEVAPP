@@ -24,7 +24,7 @@
                    VerticalAlignment="Center">
             
         </TextBlock>
-        <Grid x:Name="frameGrid" Background="#1A181B"  Grid.Row="1" Margin="15, 0, 15, 0" >
+        <Grid x:Name="frameGrid" Background="#1A181B"  Grid.Row="1"  >
             <Frame x:Name="rootFrame"/>
         </Grid>
     </Grid>

@@ -13,15 +13,20 @@
     
     
     <Grid x:Name="frameGrid" Background="#1A181B" ColumnDefinitions="*, *" RowDefinitions ="*, *" Grid.Row="1" Margin="15, 0, 15, 0" >
-        <Frame x:Name="topleftFrame" Grid.Column="0" Grid.Row="0" CornerRadius="8" Margin="10, 10, 10, 10" Grid.ColumnSpan="{Binding FullScreenValue,Mode=OneWay}" Grid.RowSpan="{Binding FullScreenValue, Mode=OneWay}" Visibility="{Binding TopLeftVisibility, Mode=OneWay}"/>
+        <Frame x:Name="topleftFrame" Grid.Column="0" Grid.Row="0" CornerRadius="8" Margin="10, 10, 10, 10" Grid.ColumnSpan="{Binding TopLeftFullScreenValue,Mode=OneWay}" Grid.RowSpan="{Binding TopLeftFullScreenValue, Mode=OneWay}" Visibility="{Binding TopLeftVisibility, Mode=OneWay}"/>
         <AppBarButton Icon="FullScreen"  Grid.Column="0" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" Command="{Binding TopLeftFullScreenCommand, Mode=OneWay}" Visibility="{Binding TopLeftButtonVisibility, Mode=OneWay}"/>
-        <Frame x:Name="bottomleftFrame" Grid.Column="0" Grid.Row="1" CornerRadius="8" Margin="10,10,10,10" Visibility="{Binding BottomRightVisibility, Mode=OneWay}" />
-        <AppBarButton Icon="FullScreen"  Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" Visibility="{Binding BottomRightButtonVisibility, Mode=OneWay}"/>
-        <Frame x:Name="toprightFrame" Grid.Column="1" Grid.Row="0" CornerRadius="8" Margin="10,10,10,10" Visibility="{Binding TopRightVisibility, Mode=OneWay}"/>
-        <AppBarButton Icon="FullScreen"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" Visibility="{Binding TopRightButtonVisibility, Mode=OneWay}" />
-        <Frame x:Name="bottomrightFrame" Grid.Row="1" Grid.Column="1" CornerRadius="8" Margin="10,10,10,10" Visibility="{Binding BottomLeftVisibility, Mode=OneWay}"/>
-        <AppBarButton Icon="FullScreen"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" Visibility="{Binding BottomLeftButtonVisibility, Mode=OneWay}"/>
-        <TextBlock Text="{Binding FullScreenValue, Mode=OneWay}" Grid.Row="1" Grid.Column="1"/>
+
+        <Frame x:Name="bottomleftFrame" Grid.Column="{Binding BottomLeftColumn, Mode=OneWay}" Grid.Row="{Binding BottomLeftRow,Mode=OneWay}" CornerRadius="8" Margin="10,10,10,10" Visibility="{Binding BottomLeftVisibility, Mode=OneWay}" Grid.ColumnSpan="{Binding BottomLeftFullScreenValue,Mode=OneWay}" Grid.RowSpan="{Binding BottomLeftFullScreenValue, Mode=OneWay}"/>
+        <AppBarButton Icon="FullScreen"  Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" Visibility="{Binding BottomLeftButtonVisibility, Mode=OneWay}" Command="{Binding BottomLeftFullScreenCommand, Mode=OneWay}"/>
+
+        <Frame x:Name="toprightFrame" Grid.Column="{Binding TopRightColumn, Mode=OneWay}" Grid.Row="{Binding TopRightRow, Mode=OneWay}" CornerRadius="8" Margin="10,10,10,10" Visibility="{Binding TopRightVisibility, Mode=OneWay}" Grid.ColumnSpan="{Binding TopRightFullScreenValue,Mode=OneWay}" Grid.RowSpan="{Binding TopRightFullScreenValue, Mode=OneWay}"/>
+        <AppBarButton Icon="FullScreen"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" Visibility="{Binding TopRightButtonVisibility, Mode=OneWay}" Command="{Binding TopRightFullScreenCommand, Mode=OneWay}"/>
+
+        <Frame x:Name="bottomrightFrame" Grid.Row="{Binding BottomRightRow, Mode=OneWay}" Grid.Column="{Binding BottomRightColumn, Mode=OneWay}" CornerRadius="8" Margin="10,10,10,10" Visibility="{Binding BottomRightVisibility, Mode=OneWay}" Grid.ColumnSpan="{Binding BottomRightFullScreenValue,Mode=OneWay}" Grid.RowSpan="{Binding BottomRightFullScreenValue, Mode=OneWay}"/>
+        <AppBarButton Icon="FullScreen"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" Visibility="{Binding BottomRightButtonVisibility, Mode=OneWay}" Command="{Binding BottomRightFullScreenCommand}"/>
+        
+
+        <AppBarButton Icon="BackToWindow" Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,5,5,10" Visibility="{Binding ExitFullScreenButtonVisibility, Mode=OneWay}" Command="{Binding ExitFullScreenCommand}"/>
     </Grid>
         
 </Page>
