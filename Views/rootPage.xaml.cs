@@ -29,16 +29,11 @@ namespace ConduitDEVAPP.Views
 
             // Navigate to corresponding frames.
             topleftFrame.Navigate(typeof(ConnectionView));
-            toprightFrame.Navigate(typeof(ConnectionView));
+            toprightFrame.Navigate(typeof(NotificationView));
             bottomrightFrame.Navigate(typeof(ConnectionView));
             bottomleftFrame.Navigate(typeof(ConnectionView));
 
-            // Initialize ViewModel
-            //ViewModel = new ViewModels.rootPageViewModel();
-            //this.DataContext = ViewModel;
-            
-
         }
-        //public ViewModels.rootPageViewModel ViewModel { get; set; }
+
     }
 }
