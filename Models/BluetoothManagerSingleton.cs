@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,27 +77,39 @@ namespace ConduitDEVAPP.Models
 
         private void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
         {
-            throw new NotImplementedException();
+            // TO-DO
         }
 
         private void DeviceWatcher_EnumerationCompleted(DeviceWatcher sender, object args)
         {
-            throw new NotImplementedException();
+            // TO-DO
         }
 
         private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            throw new NotImplementedException();
+            // TO-DO
         }
 
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            throw new NotImplementedException();
+            // TO-DO
         }
 
         private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
         {
-            
+            if (sender == deviceWatcher)
+            {
+                if (args.Name == savedname && args.Pairing.IsPaired == true)
+                {
+                    InitiateConnection();
+                    Debug.WriteLine("Connecting to device!");
+                }
+            }
+        }
+
+        private void InitiateConnection()
+        {
+            // TO-DO
         }
         #endregion
     }

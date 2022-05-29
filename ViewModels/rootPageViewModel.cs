@@ -89,15 +89,6 @@ namespace ConduitDEVAPP.ViewModels
         [ObservableProperty]
         private int bottomLeftColumn;
 
-
-
-
-
-
-
-
-
-
         [ICommand]
         void TopLeftFullScreen()
         {
