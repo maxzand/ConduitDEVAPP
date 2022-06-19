@@ -8,6 +8,7 @@ using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
 using Windows.Storage.Streams;
+using ConduitDEVAPP.Models;
 
 namespace ConduitDEVAPP.Models
 {
@@ -256,6 +257,24 @@ namespace ConduitDEVAPP.Models
                 characteristic.ValueChanged += NS_ValueChanged;
                 Debug.WriteLine("Registered event handlers");
             }
+        }
+        public void getNotificationAttributes(int CommandID, int NotificationUID, AppendixHelper appendixHelper)
+        {
+            byte[] attributesCommand = new byte[16];
+            attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(CommandID));
+            attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(NotificationUID));
+            attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(0));
+            for (int i = 0; i < 4; i++)
+            {
+                attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(i));
+                attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(99));
+            }
+            
+
+        }
+        public static byte[] Combine(byte[] first, byte[] second)
+        {
+            return first.Concat(second).ToArray();
         }
 
 
