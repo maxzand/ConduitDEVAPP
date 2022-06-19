@@ -17,8 +17,8 @@ namespace ConduitDEVAPP.Models
         {
             this.eventID = eventID;
             this.categoryID = categoryID;
-            this.notificationUID = notificationUID
-            notificationText = "";
+            this.notificationUID = notificationUID;
+            this.notificationText = "";
 
             
 
