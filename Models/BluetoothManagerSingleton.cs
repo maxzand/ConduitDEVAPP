@@ -17,6 +17,8 @@ namespace ConduitDEVAPP.Models
         private BluetoothLEDevice device; // Bluetooth Devices
         private GattDeviceService ANCS; // ANCS
         private GattCharacteristic NS; // Notification source
+        private GattCharacteristic ControlPoint; // Control point.
+        private GattCharacteristic DataSource; // Data source.
         // private List<NotificationClass> NotificationList; // List of notifications
 
         #region Singleton Declaration
@@ -176,9 +178,15 @@ namespace ConduitDEVAPP.Models
                                                     break;
                                                 case "69D1D8F3-45E1-49A8-9821-9BBDFDAAD9D9":
                                                     // Control Point
+                                                    ControlPoint = characteristic;
+                                                    Debug.WriteLine("Found control point.");
                                                     break;
+                                                    
                                                 case "22EAC6E9-24D6-4BB5-BE44-B36ACE7C7BFB":
                                                     // Data Source
+                                                    DataSource = characteristic;
+                                                    SubscribeToCharacteristic(DataSource);
+                                                    Debug.WriteLine("Found data source.");
                                                     break;
 
 
@@ -257,9 +265,17 @@ namespace ConduitDEVAPP.Models
                 characteristic.ValueChanged += NS_ValueChanged;
                 Debug.WriteLine("Registered event handlers");
             }
+            if (characteristic.Uuid == DataSource.Uuid)
+            {
+                Debug.WriteLine("Registered data source");
+                characteristic.ValueChanged += DataSource_ValueChanged;
+            }
         }
-        public void getNotificationAttributes(int CommandID, int NotificationUID, AppendixHelper appendixHelper)
+
+
+        public async void getNotificationAttributes(int CommandID, int NotificationUID)
         {
+            AppendixHelper appendixHelper = new AppendixHelper();
             byte[] attributesCommand = new byte[16];
             attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(CommandID));
             attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(NotificationUID));
@@ -269,9 +285,30 @@ namespace ConduitDEVAPP.Models
                 attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(i));
                 attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(99));
             }
-            
+            DataWriter write = new DataWriter();
+            write.WriteBytes(attributesCommand);
+            var message = write.DetachBuffer();
+
+            var writeSuccess = await WriteBufferToControl(message);
 
         }
+
+        private async Task<bool> WriteBufferToControl(IBuffer message)
+        {
+            var result = await ControlPoint.WriteValueWithResultAsync(message);
+
+            if (result.Status == GattCommunicationStatus.Success)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+
+        }
+
         public static byte[] Combine(byte[] first, byte[] second)
         {
             return first.Concat(second).ToArray();
@@ -300,9 +337,38 @@ namespace ConduitDEVAPP.Models
 
             var notificationUID = reader.ReadInt32();
 
+            
+
             Debug.WriteLine($"Value at {DateTime.Now:hh:mm:ss.FFF}: EventID:{eventID} EventFlags:{eventFlags} CategoryID:{categoryID} CategoryCount:{categoryCount} NUID:{notificationUID}");
+            if (categoryID == 4)
+            {
+                getNotificationAttributes(0, notificationUID);
+            }
+            
 
         }
+
+        private void DataSource_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            var reader = DataReader.FromBuffer(args.CharacteristicValue);
+
+            var CommandID = reader.ReadByte();
+            var notificationUID = reader.ReadInt32(); 
+            var attributeID1 = reader.ReadByte();
+            var attribute1length = reader.ReadUInt16();
+            var attribute1 = reader.ReadString(16);
+            var attributeID2 = reader.ReadByte();
+            var attribute2length = reader.ReadUInt16();
+            var attribute2 = reader.ReadString(16);
+            var attributeID3 = reader.ReadByte();
+            var attribute3length = reader.ReadUInt16();
+            var attribute3 = reader.ReadString(16);
+
+
+            Debug.WriteLine($"Value at {DateTime.Now:hh:mm:ss.FFF}: CommandID:{CommandID} notificationUID:{notificationUID} attributeID1:{attributeID1} attribute1length:{attribute1length} attribute1:{attribute1} attribute2ID:{attribute2} attribute2length:{attribute2length} attribute2:{attribute2}");
+
+        }
+
         #endregion
     }
 }

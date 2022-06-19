@@ -14,6 +14,7 @@ namespace ConduitDEVAPP.Models
         public byte[] toBinary(int int1)
         {
             byte[] result = BitConverter.GetBytes(int1);
+            Array.Reverse(result);
             return result;
         }
         
