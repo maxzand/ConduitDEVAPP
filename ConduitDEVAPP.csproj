@@ -12,6 +12,10 @@
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Models\helper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Models\NewFile1.txt" />
     <None Remove="Views\ConnectionView.xaml" />
     <None Remove="Views\NotificationView.xaml" />
     <None Remove="Views\rootPage.xaml" />

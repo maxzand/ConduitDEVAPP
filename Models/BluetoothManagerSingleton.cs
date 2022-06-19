@@ -13,9 +13,10 @@ namespace ConduitDEVAPP.Models
 {
     public sealed class BluetoothManagerSingleton
     {
-        private BluetoothLEDevice device; // Bluetooth Device
+        private BluetoothLEDevice device; // Bluetooth Devices
         private GattDeviceService ANCS; // ANCS
         private GattCharacteristic NS; // Notification source
+        // private List<NotificationClass> NotificationList; // List of notifications
 
         #region Singleton Declaration
         private static readonly BluetoothManagerSingleton _instance = new BluetoothManagerSingleton();
@@ -280,7 +281,7 @@ namespace ConduitDEVAPP.Models
 
             var notificationUID = reader.ReadInt32();
 
-            Debug.WriteLine($"Value at {DateTime.Now:hh:mm:ss.FFF}: EventID:{eventID} EventFlags:{eventFlags} CategoryID:{categoryID} CategoryCount:{categoryCount}");
+            Debug.WriteLine($"Value at {DateTime.Now:hh:mm:ss.FFF}: EventID:{eventID} EventFlags:{eventFlags} CategoryID:{categoryID} CategoryCount:{categoryCount} NUID:{notificationUID}");
 
         }
         #endregion
