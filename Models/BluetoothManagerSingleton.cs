@@ -9,6 +9,7 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
 using Windows.Storage.Streams;
 using ConduitDEVAPP.Models;
+using System.Collections;
 
 namespace ConduitDEVAPP.Models
 {
@@ -96,7 +97,7 @@ namespace ConduitDEVAPP.Models
 
         private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            // TO-DO
+            Debug.WriteLine($"Device removed: {args.Id}");
         }
 
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
@@ -111,7 +112,7 @@ namespace ConduitDEVAPP.Models
                 if (args.Name == savedname && args.Pairing.IsPaired == true)
                 {
                     InitiateConnection(args);
-                    Debug.WriteLine("Connecting to device!");
+                    Debug.WriteLine($"Connecting to device! {args.Id}");
                 }
             }
         }
@@ -141,7 +142,7 @@ namespace ConduitDEVAPP.Models
                 // BT_Code: GetGattServicesAsync returns a list of all the supported services of the device (even if it's not paired to the system).
                 // If the services supported by the device are expected to change during BT usage, subscribe to the GattServicesChanged event.
                 GattDeviceServicesResult result = await device.GetGattServicesAsync(BluetoothCacheMode.Uncached);
-
+                
                 if (result.Status == GattCommunicationStatus.Success)
                 {
                     Debug.WriteLine("Found services!");
@@ -273,24 +274,45 @@ namespace ConduitDEVAPP.Models
         }
 
 
-        public async void getNotificationAttributes(int CommandID, int NotificationUID)
+        public async void getNotificationAttributes(sbyte CommandID, UInt32 NotificationUID)
         {
-            AppendixHelper appendixHelper = new AppendixHelper();
-            byte[] attributesCommand = new byte[16];
-            attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(CommandID));
-            attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(NotificationUID));
-            attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(0));
-            for (int i = 0; i < 4; i++)
+
+            var writer = new Windows.Storage.Streams.DataWriter();
+            writer.ByteOrder = Windows.Storage.Streams.ByteOrder.LittleEndian;
+            writer.WriteByte( (byte)CommandID);
+            writer.WriteUInt32(NotificationUID);
+            writer.WriteByte((byte)0);
+            writer.WriteByte((byte)1);
+            writer.WriteUInt16(99);
+            writer.WriteByte((byte)3);
+            writer.WriteUInt16(99);
+            /*
+            for (sbyte i = 1; i < 2; i++)
             {
-                attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(i));
-                attributesCommand = Combine(attributesCommand, appendixHelper.toBinary(99));
+                writer.WriteByte();
             }
-            DataWriter write = new DataWriter();
-            write.WriteBytes(attributesCommand);
-            var message = write.DetachBuffer();
+            */
+            var message = writer.DetachBuffer();
+
+            //var reader = DataReader.FromBuffer(message);
+            //var output = reader.ReadString(message.Length);
 
             var writeSuccess = await WriteBufferToControl(message);
 
+
+        }
+
+        private async void PerformNotificationAction(sbyte CommandID, uint NotificationUID, sbyte ActionID)
+        {
+            var writer = new Windows.Storage.Streams.DataWriter();
+            writer.ByteOrder = Windows.Storage.Streams.ByteOrder.LittleEndian;
+            writer.WriteByte((byte)CommandID);
+            writer.WriteUInt32(NotificationUID);
+            writer.WriteByte((byte)ActionID);
+
+            var message = writer.DetachBuffer();
+
+            var writeSuccess = await WriteBufferToControl(message);
         }
 
         private async Task<bool> WriteBufferToControl(IBuffer message)
@@ -326,48 +348,67 @@ namespace ConduitDEVAPP.Models
 
 
         #region Event Handlers
+        // Event run when a notification is receieved.
         private void NS_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
+            reader.ByteOrder = Windows.Storage.Streams.ByteOrder.LittleEndian;
 
+            var output = reader.ReadString(args.CharacteristicValue.Length);
+
+            reader = DataReader.FromBuffer(args.CharacteristicValue);
+            reader.ByteOrder = Windows.Storage.Streams.ByteOrder.LittleEndian;
             var eventID = reader.ReadByte();
             var eventFlags = reader.ReadByte();
             var categoryID = reader.ReadByte();
             var categoryCount = reader.ReadByte();
 
-            var notificationUID = reader.ReadInt32();
+            var notificationUID = reader.ReadUInt32();
 
             
 
             Debug.WriteLine($"Value at {DateTime.Now:hh:mm:ss.FFF}: EventID:{eventID} EventFlags:{eventFlags} CategoryID:{categoryID} CategoryCount:{categoryCount} NUID:{notificationUID}");
-            if (categoryID == 4)
-            {
-                getNotificationAttributes(0, notificationUID);
-            }
+
+            
+            getNotificationAttributes(0 , notificationUID);
+            
             
 
         }
 
         private void DataSource_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
+            var ibufferlength = args.CharacteristicValue.Length;
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
+            var readerlength = reader.UnconsumedBufferLength;
+
+            var output = reader.ReadString(ibufferlength);
+
+            reader = DataReader.FromBuffer(args.CharacteristicValue);
+            reader.ByteOrder = Windows.Storage.Streams.ByteOrder.LittleEndian;
 
             var CommandID = reader.ReadByte();
-            var notificationUID = reader.ReadInt32(); 
+            var notificationUID = reader.ReadUInt32(); 
             var attributeID1 = reader.ReadByte();
             var attribute1length = reader.ReadUInt16();
-            var attribute1 = reader.ReadString(16);
+            var attribute1 = reader.ReadString(attribute1length);
             var attributeID2 = reader.ReadByte();
             var attribute2length = reader.ReadUInt16();
-            var attribute2 = reader.ReadString(16);
+            var attribute2 = reader.ReadString(attribute2length);
             var attributeID3 = reader.ReadByte();
             var attribute3length = reader.ReadUInt16();
-            var attribute3 = reader.ReadString(16);
+            var attribute3 = reader.ReadString(attribute3length);
+
+            if (attribute3 == "Incoming Call")
+            {
+                PerformNotificationAction((sbyte)2, notificationUID, (sbyte)0);
+            }
 
 
-            Debug.WriteLine($"Value at {DateTime.Now:hh:mm:ss.FFF}: CommandID:{CommandID} notificationUID:{notificationUID} attributeID1:{attributeID1} attribute1length:{attribute1length} attribute1:{attribute1} attribute2ID:{attribute2} attribute2length:{attribute2length} attribute2:{attribute2}");
+            Debug.WriteLine($"Value at {DateTime.Now:hh:mm:ss.FFF}: CommandID:{CommandID} notificationUID:{notificationUID} attributeID1:{attributeID1} attribute1length:{attribute1length} attribute1:{attribute1} Title:{attribute2} message:{attribute3}");
 
         }
+
 
         #endregion
     }
