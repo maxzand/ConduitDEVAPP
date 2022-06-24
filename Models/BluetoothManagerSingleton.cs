@@ -10,6 +10,8 @@ using Windows.Devices.Enumeration;
 using Windows.Storage.Streams;
 using ConduitDEVAPP.Models;
 using System.Collections;
+using ConduitDEVAPP.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace ConduitDEVAPP.Models
 {
@@ -20,6 +22,7 @@ namespace ConduitDEVAPP.Models
         private GattCharacteristic NS; // Notification source
         private GattCharacteristic ControlPoint; // Control point.
         private GattCharacteristic DataSource; // Data source.
+        Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         // private List<NotificationClass> NotificationList; // List of notifications
 
         #region Singleton Declaration
@@ -36,7 +39,9 @@ namespace ConduitDEVAPP.Models
         }
         #endregion
 
+        public ObservableCollection<Notification> notificationCollection = new ObservableCollection<Notification>();
         private string savedname = "Maxime"; // Saved device name from settings.
+        private string foundID;
 
         #region Connection Establishment
         private DeviceWatcher deviceWatcher;
@@ -102,29 +107,44 @@ namespace ConduitDEVAPP.Models
 
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            // TO-DO
+            if (sender == deviceWatcher)
+            {
+                try
+                {
+                    if ((bool?)args.Properties["System.Devices.Aep.Bluetooth.Le.IsConnectable"] == true && args.Id == foundID) ;
+                    {
+                        InitiateConnection(args.Id);
+                    }
+                }
+                catch
+                {
+                    // Index does not exist (IsConnectable did not update)
+                }
+            }
         }
 
         private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
         {
             if (sender == deviceWatcher)
             {
-                if (args.Name == savedname && args.Pairing.IsPaired == true)
+                if (args.Name == savedname && args.Pairing.IsPaired == true && (bool?)args.Properties["System.Devices.Aep.Bluetooth.Le.IsConnectable"] == true)
                 {
-                    InitiateConnection(args);
+                    foundID = args.Id;
+                    InitiateConnection(args.Id);
                     Debug.WriteLine($"Connecting to device! {args.Id}");
+                    Debug.WriteLine((bool?)args.Properties["System.Devices.Aep.Bluetooth.Le.IsConnectable"] == true);
                 }
             }
         }
 
-        private async void InitiateConnection(DeviceInformation args)
+        private async void InitiateConnection(string ID)
         {
             StopBleDeviceWatcher();
 
             try
             {
                 // BT_Code: BluetoothLEDevice.FromIdAsync must be called from a UI thread because it may prompt for consent.
-                device = await BluetoothLEDevice.FromIdAsync(args.Id);
+                device = await BluetoothLEDevice.FromIdAsync(ID);
 
                 if (device == null)
                 {
@@ -133,7 +153,7 @@ namespace ConduitDEVAPP.Models
             }
             catch
             {
-                // fuck
+                // 
             }
 
             if (device != null)
@@ -142,7 +162,7 @@ namespace ConduitDEVAPP.Models
                 // BT_Code: GetGattServicesAsync returns a list of all the supported services of the device (even if it's not paired to the system).
                 // If the services supported by the device are expected to change during BT usage, subscribe to the GattServicesChanged event.
                 GattDeviceServicesResult result = await device.GetGattServicesAsync(BluetoothCacheMode.Uncached);
-                
+
                 if (result.Status == GattCommunicationStatus.Success)
                 {
                     Debug.WriteLine("Found services!");
@@ -219,7 +239,7 @@ namespace ConduitDEVAPP.Models
 
                 }
             }
-            #endregion
+#endregion
         }
 
         private async void SubscribeToCharacteristic(GattCharacteristic characteristic)
@@ -279,13 +299,16 @@ namespace ConduitDEVAPP.Models
 
             var writer = new Windows.Storage.Streams.DataWriter();
             writer.ByteOrder = Windows.Storage.Streams.ByteOrder.LittleEndian;
-            writer.WriteByte( (byte)CommandID);
+            writer.WriteByte((byte)CommandID);
             writer.WriteUInt32(NotificationUID);
             writer.WriteByte((byte)0);
             writer.WriteByte((byte)1);
             writer.WriteUInt16(99);
             writer.WriteByte((byte)3);
             writer.WriteUInt16(99);
+            writer.WriteByte((byte)6);
+            writer.WriteByte((byte)7);
+
             /*
             for (sbyte i = 1; i < 2; i++)
             {
@@ -347,7 +370,7 @@ namespace ConduitDEVAPP.Models
 
 
 
-        #region Event Handlers
+#region Event Handlers
         // Event run when a notification is receieved.
         private void NS_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
@@ -369,9 +392,20 @@ namespace ConduitDEVAPP.Models
 
             Debug.WriteLine($"Value at {DateTime.Now:hh:mm:ss.FFF}: EventID:{eventID} EventFlags:{eventFlags} CategoryID:{categoryID} CategoryCount:{categoryCount} NUID:{notificationUID}");
 
-            
-            getNotificationAttributes(0 , notificationUID);
-            
+            var VMinstance = new NotificationViewModel();
+            if (eventID == 0)
+            {
+                getNotificationAttributes(0, notificationUID);
+            }
+            if (eventID == 2)
+            {
+                dispatcherQueue.TryEnqueue(() =>
+                {
+                    notificationCollection.Remove(notificationCollection.Where(i => (UInt32)i.NotificationUID == (UInt32)notificationUID).FirstOrDefault());
+                }
+);
+            }
+
             
 
         }
@@ -398,19 +432,31 @@ namespace ConduitDEVAPP.Models
             var attributeID3 = reader.ReadByte();
             var attribute3length = reader.ReadUInt16();
             var attribute3 = reader.ReadString(attribute3length);
-
+            var attributeID4 = reader.ReadByte();
+            var attribute4length = reader.ReadUInt16();
+            var attribute4 = reader.ReadString(attribute4length);
+            var attributeID5 = reader.ReadByte();
+            var attribute5length = reader.ReadUInt16();
+            var attribute5 = reader.ReadString(attribute5length);
+            /*
             if (attribute3 == "Incoming Call")
             {
                 PerformNotificationAction((sbyte)2, notificationUID, (sbyte)0);
             }
+            */
 
+            //Debug.WriteLine($"Value at {DateTime.Now:hh:mm:ss.FFF}: CommandID:{CommandID} notificationUID:{notificationUID} attributeID1:{attributeID1} attribute1length:{attribute1length} attribute1:{attribute1} Title:{attribute2} message:{attribute3}");
 
-            Debug.WriteLine($"Value at {DateTime.Now:hh:mm:ss.FFF}: CommandID:{CommandID} notificationUID:{notificationUID} attributeID1:{attributeID1} attribute1length:{attribute1length} attribute1:{attribute1} Title:{attribute2} message:{attribute3}");
+            dispatcherQueue.TryEnqueue(() =>
+            {
+                notificationCollection.Insert(0,new Notification((string)attribute2, (string)attribute3, (string)attribute4, (string)attribute5, (UInt32)notificationUID));
+            }
+            );
 
         }
 
 
-        #endregion
+#endregion
     }
 }
 

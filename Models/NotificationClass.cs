@@ -6,27 +6,34 @@ using System.Threading.Tasks;
 
 namespace ConduitDEVAPP.Models
 {
-    internal class Notification
+    public sealed class Notification
     {
-        private int eventID;
-        private int categoryID;
-        private int notificationUID;
-        private string notificationText;
+        public int CategoryID;
+        public UInt32 NotificationUID;
+        public string Title { get; set; }
+        public string Message { get; set; }
+        public string PositiveAction;
+        public string NegativeAction;
 
-        Notification(int eventID, int categoryID, int notificationUID)
+
+        public Notification(string title, string message, string positiveAction, string negativeAction, UInt32 notificationUID)
         {
-            this.eventID = eventID;
-            this.categoryID = categoryID;
-            this.notificationUID = notificationUID;
-            this.notificationText = "";
-
-            
-
+            //this.CategoryID = categoryID;
+            //this.NotificationUID = notificationUID;
+            this.Title = title;
+            this.Message = message;
+            this.PositiveAction = positiveAction;
+            this.NegativeAction = negativeAction;
+            this.NotificationUID = notificationUID;
         }
 
 
-
-
+        
 
     }
-}
+ }       
+
+
+
+
+    

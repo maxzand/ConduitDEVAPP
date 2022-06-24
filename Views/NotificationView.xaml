@@ -4,12 +4,26 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ConduitDEVAPP.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ViewModels="using:ConduitDEVAPP.ViewModels" xmlns:local1="using:ConduitDEVAPP.Models"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    <Page.DataContext>
+        <ViewModels:NotificationViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
+    
+    
     <Grid>
-        <TextBlock Text="You have no notifications!"
-                   FontSize="24"/>
+        <ScrollViewer>
+            <ListView ItemsSource="{Binding NotificationCollection}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local1:Notification">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Title}" />
+                            <TextBlock Text="{Binding Message}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </ScrollViewer>
     </Grid>
 </Page>

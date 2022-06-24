@@ -24,7 +24,7 @@ namespace ConduitDEVAPP.Views
     /// </summary>
     public sealed partial class NotificationView : Page
     {
-        readonly BluetoothManagerSingleton Instance = BluetoothManagerSingleton.Instance;
+        
 
         public NotificationView()
         {
