@@ -114,6 +114,7 @@ namespace ConduitDEVAPP.Models
                     if ((bool?)args.Properties["System.Devices.Aep.Bluetooth.Le.IsConnectable"] == true && args.Id == foundID) ;
                     {
                         InitiateConnection(args.Id);
+                        Debug.WriteLine($"Connecting to {args.Id}");
                     }
                 }
                 catch
