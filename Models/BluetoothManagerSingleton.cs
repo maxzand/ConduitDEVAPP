@@ -12,6 +12,9 @@ using ConduitDEVAPP.Models;
 using System.Collections;
 using ConduitDEVAPP.ViewModels;
 using System.Collections.ObjectModel;
+using Windows.Devices.Bluetooth.Rfcomm;
+using Windows.Networking.Sockets;
+using Windows.Media.Audio;
 
 namespace ConduitDEVAPP.Models
 {
@@ -31,8 +34,10 @@ namespace ConduitDEVAPP.Models
         private BluetoothManagerSingleton()
         {
             device = null;
-            StartBleDeviceWatcher();
+            //StartBleDeviceWatcher();
+            StartRFCOMMAsync();
         }
+
         public static BluetoothManagerSingleton Instance
         {
             get { return _instance; }
@@ -104,7 +109,7 @@ namespace ConduitDEVAPP.Models
         {
             Debug.WriteLine($"Device removed: {args.Id}");
         }
-
+            
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
             if (sender == deviceWatcher)
@@ -243,6 +248,8 @@ namespace ConduitDEVAPP.Models
 #endregion
         }
 
+        #region ANCS Interactions
+
         private async void SubscribeToCharacteristic(GattCharacteristic characteristic)
         {
             // initialize status
@@ -355,23 +362,9 @@ namespace ConduitDEVAPP.Models
 
         }
 
-        public static byte[] Combine(byte[] first, byte[] second)
-        {
-            return first.Concat(second).ToArray();
-        }
+        #endregion
 
-
-
-
-
-
-
-
-
-
-
-
-#region Event Handlers
+        #region Event Handlers
         // Event run when a notification is receieved.
         private void NS_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
@@ -457,7 +450,57 @@ namespace ConduitDEVAPP.Models
         }
 
 
-#endregion
+        #endregion
+
+        #region RFCOMM
+        private async Task StartRFCOMMAsync()
+        {
+            IBuffer buffer;
+            // Enumerate devices with the object push service
+            var rfcommDevice =
+                await Windows.Devices.Enumeration.DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelectorFromDeviceName("Maxime"));
+            var hedevice = await BluetoothDevice.FromIdAsync(rfcommDevice[0].Id);
+            var connection = AudioPlaybackConnection.TryCreateFromId(hedevice.DeviceId);
+
+
+
+
+
+            /*
+            var hedevice = await BluetoothDevice.FromIdAsync(rfcommDevice[0].Id);
+            var result = await hedevice.GetRfcommServicesAsync();
+
+            if (result.Services.Count > 0)
+            {
+                var services = result.Services;
+
+                var service = services.Where(i => i.ServiceId.Uuid.ToString().ToLower() == "0000111f-0000-1000-8000-00805f9b34fb".ToLower()).Single();
+                var _socket = new StreamSocket();
+                await _socket.ConnectAsync(
+                    service.ConnectionHostName,
+                    service.ConnectionServiceName,
+                    SocketProtectionLevel
+                        .BluetoothEncryptionWithAuthentication);
+
+                
+                _ = await _socket.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.None);
+                
+                DataReader reader = DataReader.FromBuffer(buffer);
+                var text = reader.ReadString(buffer.Length);
+
+                Debug.WriteLine(_socket.OutputStream);
+                Debug.WriteLine(_socket.InputStream);
+            */
+        }
+
+
+            
+        }
+
+
+
+
+        #endregion
     }
 }
 
