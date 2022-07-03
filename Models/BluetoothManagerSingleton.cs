@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using Windows.Devices.Bluetooth.Rfcomm;
 using Windows.Networking.Sockets;
 using Windows.Media.Audio;
+using Windows.ApplicationModel.Calls;
 
 namespace ConduitDEVAPP.Models
 {
@@ -432,12 +433,12 @@ namespace ConduitDEVAPP.Models
             var attributeID5 = reader.ReadByte();
             var attribute5length = reader.ReadUInt16();
             var attribute5 = reader.ReadString(attribute5length);
-            /*
+            
             if (attribute3 == "Incoming Call")
             {
                 PerformNotificationAction((sbyte)2, notificationUID, (sbyte)0);
             }
-            */
+            
 
             //Debug.WriteLine($"Value at {DateTime.Now:hh:mm:ss.FFF}: CommandID:{CommandID} notificationUID:{notificationUID} attributeID1:{attributeID1} attribute1length:{attribute1length} attribute1:{attribute1} Title:{attribute2} message:{attribute3}");
 
@@ -455,12 +456,49 @@ namespace ConduitDEVAPP.Models
         #region RFCOMM
         private async Task StartRFCOMMAsync()
         {
-            IBuffer buffer;
             // Enumerate devices with the object push service
             var rfcommDevice =
-                await Windows.Devices.Enumeration.DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelectorFromDeviceName("Maxime"));
+    await DeviceInformation.FindAllAsync(PhoneLineTransportDevice.GetDeviceSelector());
+            var connection = PhoneLineTransportDevice.FromId(rfcommDevice[0].Id);
+            
+            if (connection != null)
+            {
+                var result = await connection.RequestAccessAsync();
+                Debug.WriteLine(result);
+                if (result == DeviceAccessStatus.Allowed)
+                {
+                    Debug.WriteLine("Allowed!");
+                    bool connected = await connection.ConnectAsync();
+                    Debug.WriteLine(connected);
+                    Debug.WriteLine("Connection!");
+                    connection.RegisterApp();
+                    
+                }
+
+            }
+            else
+            {
+                Debug.WriteLine("WRONG");
+            }
+
+
+
+
+
+
+            /*
+            var rfcommDevice =
+                await DeviceInformation.FindAllAsync(AudioPlaybackConnection.GetDeviceSelector());
             var hedevice = await BluetoothDevice.FromIdAsync(rfcommDevice[0].Id);
-            var connection = AudioPlaybackConnection.TryCreateFromId(hedevice.DeviceId);
+            var connection = AudioPlaybackConnection.TryCreateFromId(rfcommDevice[0].Id);
+            if (connection != null)
+            {
+                await connection.StartAsync();
+                var result = connection.OpenAsync();
+                Debug.WriteLine(result.Status);
+            }
+            */
+
 
 
 
@@ -502,6 +540,5 @@ namespace ConduitDEVAPP.Models
 
         #endregion
     }
-}
 
 
