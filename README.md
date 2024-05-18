@@ -19,11 +19,5 @@ Conduit bridges the gap between Apple and Windows devices, offering a seamless w
 ## How to Use
 As the project is currently not up to date, installation instructions are not provided. Please check back later for updates on how to install and use Conduit on your devices.
 
-## Contributing
-We welcome contributions to Conduit! If you're interested in helping out, please feel free to fork the repository, make your changes, and submit a pull request. We're looking forward to your innovative ideas and improvements.
-
-## Acknowledgments
-A special thanks to everyone who has contributed to the development and advancement of Conduit. Your efforts and insights are greatly appreciated and have been instrumental in bringing this project to life.
-
 ## License
 MIT License
